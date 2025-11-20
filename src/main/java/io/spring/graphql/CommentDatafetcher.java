@@ -78,7 +78,8 @@ public class CommentDatafetcher {
               current,
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV));
     }
-    graphql.relay.PageInfo pageInfo = buildCommentPageInfo(comments);
+    graphql.relay.PageInfo relayPageInfo = buildCommentPageInfo(comments);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
     CommentsConnection result =
         CommentsConnection.newBuilder()
             .pageInfo(pageInfo)
@@ -117,6 +118,15 @@ public class CommentDatafetcher {
         .body(comment.getBody())
         .updatedAt(ISODateTimeFormat.dateTime().withZoneUTC().print(comment.getCreatedAt()))
         .createdAt(ISODateTimeFormat.dateTime().withZoneUTC().print(comment.getCreatedAt()))
+        .build();
+  }
+
+  private io.spring.graphql.types.PageInfo convertPageInfo(graphql.relay.PageInfo relayPageInfo) {
+    return io.spring.graphql.types.PageInfo.newBuilder()
+        .hasNextPage(relayPageInfo.isHasNextPage())
+        .hasPreviousPage(relayPageInfo.isHasPreviousPage())
+        .startCursor(relayPageInfo.getStartCursor() != null ? relayPageInfo.getStartCursor().getValue() : null)
+        .endCursor(relayPageInfo.getEndCursor() != null ? relayPageInfo.getEndCursor().getValue() : null)
         .build();
   }
 }
