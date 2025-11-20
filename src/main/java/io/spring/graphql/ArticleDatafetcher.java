@@ -64,7 +64,8 @@ public class ArticleDatafetcher {
               current,
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV));
     }
-    graphql.relay.PageInfo pageInfo = buildArticlePageInfo(articles);
+    graphql.relay.PageInfo relayPageInfo = buildArticlePageInfo(articles);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
     ArticlesConnection articlesConnection =
         ArticlesConnection.newBuilder()
             .pageInfo(pageInfo)
@@ -114,7 +115,8 @@ public class ArticleDatafetcher {
               target,
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV));
     }
-    graphql.relay.PageInfo pageInfo = buildArticlePageInfo(articles);
+    graphql.relay.PageInfo relayPageInfo = buildArticlePageInfo(articles);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
     ArticlesConnection articlesConnection =
         ArticlesConnection.newBuilder()
             .pageInfo(pageInfo)
@@ -167,7 +169,8 @@ public class ArticleDatafetcher {
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV),
               current);
     }
-    graphql.relay.PageInfo pageInfo = buildArticlePageInfo(articles);
+    graphql.relay.PageInfo relayPageInfo = buildArticlePageInfo(articles);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
 
     ArticlesConnection articlesConnection =
         ArticlesConnection.newBuilder()
@@ -221,7 +224,8 @@ public class ArticleDatafetcher {
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV),
               current);
     }
-    graphql.relay.PageInfo pageInfo = buildArticlePageInfo(articles);
+    graphql.relay.PageInfo relayPageInfo = buildArticlePageInfo(articles);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
     ArticlesConnection articlesConnection =
         ArticlesConnection.newBuilder()
             .pageInfo(pageInfo)
@@ -276,7 +280,8 @@ public class ArticleDatafetcher {
               new CursorPageParameter<>(DateTimeCursor.parse(before), last, Direction.PREV),
               current);
     }
-    graphql.relay.PageInfo pageInfo = buildArticlePageInfo(articles);
+    graphql.relay.PageInfo relayPageInfo = buildArticlePageInfo(articles);
+    io.spring.graphql.types.PageInfo pageInfo = convertPageInfo(relayPageInfo);
     ArticlesConnection articlesConnection =
         ArticlesConnection.newBuilder()
             .pageInfo(pageInfo)
@@ -379,6 +384,15 @@ public class ArticleDatafetcher {
         .tagList(articleData.getTagList())
         .title(articleData.getTitle())
         .updatedAt(ISODateTimeFormat.dateTime().withZoneUTC().print(articleData.getUpdatedAt()))
+        .build();
+  }
+
+  private io.spring.graphql.types.PageInfo convertPageInfo(graphql.relay.PageInfo relayPageInfo) {
+    return io.spring.graphql.types.PageInfo.newBuilder()
+        .hasNextPage(relayPageInfo.isHasNextPage())
+        .hasPreviousPage(relayPageInfo.isHasPreviousPage())
+        .startCursor(relayPageInfo.getStartCursor() != null ? relayPageInfo.getStartCursor().getValue() : null)
+        .endCursor(relayPageInfo.getEndCursor() != null ? relayPageInfo.getEndCursor().getValue() : null)
         .build();
   }
 }
